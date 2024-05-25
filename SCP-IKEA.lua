@@ -1,9 +1,14 @@
 print("Loading SCP-IKEA...")
 
 local oldProcessClosed, oldProcessClosingError = pcall(function()
-    if (_G.ks_espconnection ~= null) then
-        _G.ks_espconnection:Disconnect()
-        _G.ks_espconnection = null
+    if (_G.ks_heartbeat ~= null) then
+        _G.ks_heartbeat:Disconnect()
+        _G.ks_heartbeat = null
+    end
+
+    if (_G.ks_heartbeat2 ~= null) then
+        _G.ks_heartbeat2:Disconnect()
+        _G.ks_heartbeat2 = null
     end
 
     if (_G.esps ~= null) then
@@ -20,6 +25,7 @@ end)
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local lp = Players.LocalPlayer
+local mouse = lp:GetMouse()
 
 local gameObjects = game.Workspace:WaitForChild("GameObjects")
 local physicalF = gameObjects:WaitForChild("Physical")
@@ -39,36 +45,15 @@ function respawn()
 end
 
 function pickup(itemModel)
-    local args = {
-        [1] = "Store",
-        [2] = {
-            ["Model"] = itemModel
-        }
-    }
-
-    lp.Character.System.Action:InvokeServer(unpack(args))
+    lp.Character.System.Action:InvokeServer("Store", itemModel)
 end
 
 function consume(itemName)
-    local args = {
-        [1] = "Inventory_Consume",
-        [2] = {
-            ["Tool"] = itemName
-        }
-    }
-
-    lp.Character.System.Action:InvokeServer(unpack(args))
+    lp.Character.System.Action:InvokeServer("Inventory_Consume", itemName)
 end
 
 function drop(itemName)
-    local args = {
-        [1] = "Inventory_Drop",
-        [2] = {
-            ["Tool"] = itemName
-        }
-    }
-
-    game:GetService("Players").LocalPlayer.Character.System.Action:InvokeServer(unpack(args))
+    game:GetService("Players").LocalPlayer.Character.System.Action:InvokeServer("Inventory_Drop", itemName)
 end
 
 function whistle()
@@ -150,7 +135,8 @@ function updateNearestItems()
 	end
 end
 
-_G.ks_espconnection = RunService.Heartbeat:Connect(function(delta)
+_G.ks_heartbeat = RunService.Heartbeat:Connect(function(delta)
+    -- ESP stuff
 	updateNearestItems()
 	for id, item in pairs(nearestItems) do
 		if (item.Parent ~= null) then
@@ -166,4 +152,21 @@ _G.ks_espconnection = RunService.Heartbeat:Connect(function(delta)
             end
         end
 	end
+end)
+
+_G.ks_heartbeat2 = RunService.Heartbeat:Connect(function(delta)
+    -- Auto collect items on mouse hover
+    local target = mouse.GetTarget()
+    if (target) then
+        if target:IsA("BasePart") then
+            local g = target.Parent
+            if (g.Parent == itemsFolder) then
+                pickup(g)
+            end
+        else if target:IsA("Model") then
+            if (target.Parent == itemsFolder) then
+                pickup(target)
+            end
+        end
+    end
 end)
