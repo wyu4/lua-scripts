@@ -1,5 +1,21 @@
 print("Loading SCIP-IKEA...")
 
+local oldProcessClosed, oldProcessClosingError = pcall(function()
+    if (_G.ks_espconnection ~= null) then
+        _G.ks_espconnection:Disconnect()
+        _G.ks_espconnection = null
+    end
+
+    if (_G.esps ~= null) then
+        for _, v in pairs(_G.esps) do
+            v[2]:Destroy()
+            v[3]:Destroy()
+            v[4]:Disconnect()
+        end
+        _G.esps = null
+    end
+end)
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local lp = Players.LocalPlayer
@@ -10,7 +26,7 @@ local characterFolder = physicalF:WaitForChild("Players")
 local itemsFolder = physicalF:WaitForChild("Items")
 
 local nearestItems = {}
-local esps = {}
+local _G.esps = {}
 
 local ITEM_PIZZA = "Pizza"
 local ITEM_BURGER = "Burger"
@@ -60,7 +76,7 @@ end
 
 -- Create a destroyable ESP
 function createEsp(basepart:BasePart)
-	esps[basepart.Parent.Name] = {}
+	_G.esps[basepart.Parent.Name] = {}
 	
 	local highlight = Instance.new("Highlight")
 	highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
@@ -99,7 +115,7 @@ function createEsp(basepart:BasePart)
 		end)
 	end)
 	
-	esps[basepart.Parent.Name] = {basepart, highlight, gui, connection}
+	_G.esps[basepart.Parent.Name] = {basepart, highlight, gui, connection}
 end
 
 function getDistanceFromPlr(p:BasePart) 
@@ -133,15 +149,15 @@ function updateNearestItems()
 	end
 end
 
-RunService.Heartbeat:Connect(function(delta)
+_G.ks_espconnection = RunService.Heartbeat:Connect(function(delta)
 	updateNearestItems()
 	for id, item in pairs(nearestItems) do
 		if (item.Parent ~= null) then
-            if (esps[id]) then
-                if (esps[id][1] ~= item) then
-                    esps[id][2]:Destroy()
-                    esps[id][3]:Destroy()
-                    esps[id][4]:Disconnect()
+            if (_G.esps[id]) then
+                if (_G.esps[id][1] ~= item) then
+                    _G.esps[id][2]:Destroy()
+                    _G.esps[id][3]:Destroy()
+                    _G.esps[id][4]:Disconnect()
                     createEsp(item)
                 end
             else
