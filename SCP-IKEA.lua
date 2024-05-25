@@ -103,7 +103,14 @@ function createEsp(basepart:BasePart)
 end
 
 function getDistanceFromPlr(p:BasePart) 
-	return (p.CFrame.Position - lp.Character.HumanoidRootPart.CFrame.Position).Magnitude
+	local dist
+    local s, e = pcall(function()
+        dist = (p.CFrame.Position - lp.Character.HumanoidRootPart.CFrame.Position).Magnitude
+    end)
+    if s then
+        return dist
+    end
+    return 0
 end
 
 function updateNearestItems()
@@ -128,17 +135,18 @@ end
 
 RunService.Heartbeat:Connect(function(delta)
 	updateNearestItems()
-	for _, item in pairs(nearestItems) do
-		local itemID = item.Parent.Name
-		if (esps[itemID]) then
-			if (esps[itemID][1] ~= item) then
-				esps[itemID][2]:Destroy()
-				esps[itemID][3]:Destroy()
-				esps[itemID][4]:Disconnect()
-				createEsp(item)
-			end
-		else
-			createEsp(item)
-		end
+	for id, item in pairs(nearestItems) do
+		if (item.Parent ~= null) then
+            if (esps[id]) then
+                if (esps[id][1] ~= item) then
+                    esps[id][2]:Destroy()
+                    esps[id][3]:Destroy()
+                    esps[id][4]:Disconnect()
+                    createEsp(item)
+                end
+            else
+                createEsp(item)
+            end
+        end
 	end
 end)
