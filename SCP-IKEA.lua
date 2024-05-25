@@ -61,18 +61,20 @@ end
 
 -- Create a destroyable ESP
 function createEsp(basepart:BasePart)
-	local highlight = create("Highlight")
+	esps[basepart.Parent.Name] = {}
+	
+	local highlight = Instance.new("Highlight")
 	highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	highlight.FillColor = Color3.fromRGB(255, 255, 255)
 	highlight.FillTransparency = 0.5
 	highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
 	
-	local gui = create("BillboardGui")
+	local gui = Instance.new("BillboardGui")
 	gui.AlwaysOnTop = true
 	gui.Enabled = true
 	gui.Size = UDim2.new(0, 100, 0, 25)
 	
-	local textlabel = create("TextLabel")
+	local textlabel = Instance.new("TextLabel")
 	textlabel.AnchorPoint = Vector2.new(0.5, 0.5)
 	textlabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	textlabel.BackgroundTransparency = 0.25
@@ -91,21 +93,12 @@ function createEsp(basepart:BasePart)
 	gui.Parent = basepart
 	highlight.Parent = basepart
 	
-	esps[basepart.Name] = basepart
-	
 	local connection = RunService.Heartbeat:Connect(function(delta)
 		local distance = getDistanceFromPlr(basepart)
 		textlabel.Text = "["..basepart.Name.."] ["..math.round(distance).."]"
 	end)
 	
-	textlabel.Destroying:Connect(function()
-		connection:Disconnect()
-	end)
-end
-
-function create(className:string)
-	local inst = Instance.new(className)
-	createdInstances[#createdInstances+1] = Instance.new(className)
+	esps[basepart.Parent.Name] = {basepart, highlight, gui, connection}
 end
 
 function getDistanceFromPlr(p:BasePart) 
@@ -122,7 +115,6 @@ function updateNearestItems()
 			if nearestItems[id] then
 				if (getDistanceFromPlr(nearestItems[id]) > getDistanceFromPlr(root)) then
 					nearestItems[id] = root
-					print("New item!")
 				end
 			else
 				nearestItems[id] = root
@@ -131,13 +123,20 @@ function updateNearestItems()
 	end
 end
 
-function loadUI()
-
-end
-
-local loaded, errormessage = pcall(loadUI())
-
-local frameConnection = RunService.Heartbeat:Connect(function(delta)
+RunService.Heartbeat:Connect(function(delta) -- ESPs
 	updateNearestItems()
-    print(nearestItems)
+	for _, item in pairs(nearestItems) do
+		local itemID = item.Parent.Name
+		if (esps[itemID]) then
+			if (esps[itemID][1] ~= item) then
+				esps[itemID][2]:Destroy()
+				esps[itemID][3]:Destroy()
+				esps[itemID][4]:Disconnect()
+				createEsp(item)
+			end
+		else
+			createEsp(item)
+		end
+	end
 end)
+
