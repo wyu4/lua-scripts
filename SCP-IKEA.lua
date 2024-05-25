@@ -9,6 +9,7 @@ local itemsFolder = physicalF:WaitForChild("Items")
 local ITEM_PIZZA = "Pizza"
 local ITEM_BURGER = "Burger"
 local ITEM_COOKIE = "Cookie"
+local ITEM_LEMON = "Lemon"
 
 function respawn()
     lp.Character.System.Event:FireServer("Respawn")
@@ -48,3 +49,5 @@ function drop(item)
 
     game:GetService("Players").LocalPlayer.Character.System.Action:InvokeServer(unpack(args))
 end
+
+respawn()
