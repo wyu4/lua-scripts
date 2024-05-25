@@ -11,7 +11,6 @@ local itemsFolder = physicalF:WaitForChild("Items")
 
 local nearestItems = {}
 local esps = {}
-local createdInstances = {}
 
 local ITEM_PIZZA = "Pizza"
 local ITEM_BURGER = "Burger"
@@ -94,8 +93,10 @@ function createEsp(basepart:BasePart)
 	highlight.Parent = basepart
 	
 	local connection = RunService.Heartbeat:Connect(function(delta)
-		local distance = getDistanceFromPlr(basepart)
-		textlabel.Text = "["..basepart.Name.."] ["..math.round(distance).."]"
+		local s, e = pcall(function()
+			local distance = getDistanceFromPlr(basepart)
+			textlabel.Text = "["..basepart.Name.."] ["..math.round(distance).."]"
+		end)
 	end)
 	
 	esps[basepart.Parent.Name] = {basepart, highlight, gui, connection}
@@ -108,22 +109,24 @@ end
 function updateNearestItems()
 	local instances = itemsFolder:GetChildren()
 	for _, inst in pairs(instances) do
-		local id = tostring(inst.Name)
-		local root = inst:FindFirstChildWhichIsA("BasePart")
-		
-		if root then
-			if nearestItems[id] then
-				if (getDistanceFromPlr(nearestItems[id]) > getDistanceFromPlr(root)) then
+		if (inst.Parent ~= nil) then
+			local id = tostring(inst.Name)
+			local root = inst:FindFirstChildWhichIsA("BasePart")
+
+			if root then
+				if nearestItems[id] then
+					if (getDistanceFromPlr(nearestItems[id]) > getDistanceFromPlr(root)) then
+						nearestItems[id] = root
+					end
+				else
 					nearestItems[id] = root
 				end
-			else
-				nearestItems[id] = root
 			end
 		end
 	end
 end
 
-RunService.Heartbeat:Connect(function(delta) -- ESPs
+RunService.Heartbeat:Connect(function(delta)
 	updateNearestItems()
 	for _, item in pairs(nearestItems) do
 		local itemID = item.Parent.Name
@@ -139,4 +142,3 @@ RunService.Heartbeat:Connect(function(delta) -- ESPs
 		end
 	end
 end)
-
