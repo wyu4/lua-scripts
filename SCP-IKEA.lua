@@ -1,5 +1,3 @@
-print("Loading SCP-IKEA...")
-
 function _G.ks_close()
     local oldProcessClosed, oldProcessClosingError = pcall(function()
         if (_G.ks_heartbeat ~= null) then
