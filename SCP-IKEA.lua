@@ -95,7 +95,7 @@ function createEsp(basepart:BasePart)
 	local connection = RunService.Heartbeat:Connect(function(delta)
 		local s, e = pcall(function()
 			local distance = getDistanceFromPlr(basepart)
-			textlabel.Text = "["..basepart.Name.."] ["..math.round(distance).."]"
+			textlabel.Text = "["..basepart.Parent.Name.."] ["..math.round(distance).."]"
 		end)
 	end)
 	
