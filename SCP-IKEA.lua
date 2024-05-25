@@ -1,4 +1,4 @@
-print("Loading SCIP-IKEA...")
+print("Loading SCP-IKEA...")
 
 local oldProcessClosed, oldProcessClosingError = pcall(function()
     if (_G.ks_espconnection ~= null) then
@@ -14,6 +14,7 @@ local oldProcessClosed, oldProcessClosingError = pcall(function()
         end
         _G.esps = null
     end
+    print("Old process closed.")
 end)
 
 local Players = game:GetService("Players")
