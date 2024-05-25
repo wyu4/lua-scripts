@@ -1,3 +1,5 @@
+print("Loading SCIP-IKEA...")
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local lp = Players.LocalPlayer
@@ -111,7 +113,7 @@ function getDistanceFromPlr(p:BasePart)
 end
 
 function updateNearestItems()
-	local instances = itemsF:GetChildren()
+	local instances = itemsFolder:GetChildren()
 	for _, inst in pairs(instances) do
 		local id = tostring(inst.Name)
 		local root = inst:FindFirstChildWhichIsA("BasePart")
