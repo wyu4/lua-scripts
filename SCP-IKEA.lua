@@ -27,7 +27,7 @@ local characterFolder = physicalF:WaitForChild("Players")
 local itemsFolder = physicalF:WaitForChild("Items")
 
 local nearestItems = {}
-local _G.esps = {}
+_G.esps = {}
 
 local ITEM_PIZZA = "Pizza"
 local ITEM_BURGER = "Burger"
