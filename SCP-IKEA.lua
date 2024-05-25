@@ -1,26 +1,29 @@
 print("Loading SCP-IKEA...")
 
-local oldProcessClosed, oldProcessClosingError = pcall(function()
-    if (_G.ks_heartbeat ~= null) then
-        _G.ks_heartbeat:Disconnect()
-        _G.ks_heartbeat = null
-    end
-
-    if (_G.ks_heartbeat2 ~= null) then
-        _G.ks_heartbeat2:Disconnect()
-        _G.ks_heartbeat2 = null
-    end
-
-    if (_G.esps ~= null) then
-        for _, v in pairs(_G.esps) do
-            v[2]:Destroy()
-            v[3]:Destroy()
-            v[4]:Disconnect()
+function _G.ks_close()
+    local oldProcessClosed, oldProcessClosingError = pcall(function()
+        if (_G.ks_heartbeat ~= null) then
+            _G.ks_heartbeat:Disconnect()
+            _G.ks_heartbeat = null
         end
-        _G.esps = null
-    end
-    print("Old process closed.")
-end)
+    
+        if (_G.ks_heartbeat2 ~= null) then
+            _G.ks_heartbeat2:Disconnect()
+            _G.ks_heartbeat2 = null
+        end
+    
+        if (_G.esps ~= null) then
+            for _, v in pairs(_G.esps) do
+                v[2]:Destroy()
+                v[3]:Destroy()
+                v[4]:Disconnect()
+            end
+            _G.esps = null
+        end
+        print("Old process closed.")
+    end)
+end
+_G.ks_close()
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -154,19 +157,21 @@ _G.ks_heartbeat = RunService.Heartbeat:Connect(function(delta)
 	end
 end)
 
-_G.ks_heartbeat2 = RunService.Heartbeat:Connect(function(delta)
-    -- Auto collect items on mouse hover
-    local target = mouse.GetTarget()
-    if (target) then
-        if target:IsA("BasePart") then
-            local g = target.Parent
-            if (g.Parent == itemsFolder) then
-                pickup(g)
-            end
-        else if target:IsA("Model") then
-            if (target.Parent == itemsFolder) then
-                pickup(target)
-            end
-        end
-    end
-end)
+-- _G.ks_heartbeat2 = RunService.Heartbeat:Connect(function(delta)
+--     -- Auto collect items on mouse hover
+--     local target = mouse.Target
+--     if (target) then
+--         if target:IsA("BasePart") then
+--             local g = target.Parent
+--             if (g.Parent == itemsFolder) then
+--                 -- pickup(g)
+--             end
+--         elseif target:IsA("Model") then
+--             if (target.Parent == itemsFolder) then
+--                 -- pickup(target)
+--             end
+--         end
+--     end
+-- end)
+
+respawn()
