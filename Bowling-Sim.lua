@@ -1,3 +1,5 @@
+-- ID: 17165763698
+
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local runService = game:GetService("RunService")
 
@@ -43,7 +45,6 @@ end
 _G.bs_close()
 
 _G.bs_heartbeat = runService.Heartbeat:Connect(function(delta)
-    print("Thing")
     sim_click()
     sim_train(4)
     get_pk_money()
