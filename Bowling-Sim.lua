@@ -10,9 +10,13 @@ local KnitServices = Knit:WaitForChild("Services")
 local PlayerResourceService = KnitServices:WaitForChild("PlayerResourceService")
 local ClickService = KnitServices:WaitForChild("ClickService")
 local TrainService = KnitServices:WaitForChild("TrainService")
+local GameService = KnitServices:WaitForChild("GameService")
+local PetLuckService = KnitServices:WaitForChild("PetLuckService")
 
 local ClickRemotes = ClickService:WaitForChild("RF")
 local TrainRemotes = TrainService:WaitForChild("RF")
+local GameRemoteEvents = GameService:WaitForChild("RE")
+local PetLuckServiceRemotes = PetLuckService:WaitForChild("RF")
 
 function sim_click()
     ClickRemotes.Click:InvokeServer()
@@ -20,6 +24,14 @@ end
 
 function sim_train(number)
     TrainRemotes.PlayerExercise:InvokeServer(number)
+end
+
+function get_pk_money()
+    GameRemoteEvents.GetPKMoney:FireServer()
+end
+
+function hatch(egg_num)
+    PetLuckServiceRemotes.LuckOnce:InvokeServer(egg_num)
 end
 
 function _G.bs_close()
@@ -32,4 +44,5 @@ end
 _G.bs_heartbeat = runService.Heartbeat:Connect(function(delta)
     sim_click()
     sim_train(4)
+    get_pk_money()
 end)
